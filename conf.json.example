@@ -1,3 +1,6 @@
 {
-    "botClientToken":"YOUR_TOKEN"
+    "token":"YOUR_TOKEN",
+    "masterSenpai":"YOUR_OWN_ID",
+    "soundboardPrivilege":"ROLE_NEEDED_FOR_SOUNDBOARD",
+    "prefix":"!"
 }
