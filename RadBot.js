@@ -14,22 +14,30 @@ client.on('ready', () => {
 client.on('message', message => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
     if (talkedRecently.has(message.author.id)) return;
+    const args = message.content.slice(prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
 
-    //Block command spam
-    talkedRecently.add(message.author.id);
-    setTimeout(() => {
-        talkedRecently.delete(message.author.id);
-    }, 2500);
-
+    //Block command spam from everyone except masterSenpai
+    if (message.author.id !== conf.masterSenpai) {
+        talkedRecently.add(message.author.id);
+        setTimeout(() => {
+            talkedRecently.delete(message.author.id);
+        }, 2000);
+    }
     if (message.member.roles.find("name", conf.soundboardPrivilege)) {
         console.log("jukka");
     }
-    
-    if (message.content.startsWith(prefix + "ping")) {
-        message.channel.send("pong!");
-    } else if (message.content.startsWith(prefix + "foo")) {
+
+    try {
+        let commandFile = require(`./commands/${command}.js`);
+        commandFile.run(client, message, args);
+    } catch (err) {
+        console.error(err);
+    }
+
+    if (command ===  'foo') {
         message.channel.send("bar!");
-    } else if (message.content.startsWith(prefix + "joke")) {
+    } else if (command === 'joke') {
         message.channel.send('Mitkä renkaat laitetaan suklaa-autoon talvella?')
             .then(() => {
                 message.channel.awaitMessages(response => response.content === 'no?', {
@@ -44,6 +52,9 @@ client.on('message', message => {
                         message.channel.send('Pitää sanoa "no?" puolessa minuutissa :((');
                     });
             });
+    } else if (command === 'asl') {
+      let [age, sex, location] = args;
+      message.reply(`Hello ${message.author.username}, I see you're a ${age} year old ${sex} from ${location}. Wanna date?`);
     }
 });
 
