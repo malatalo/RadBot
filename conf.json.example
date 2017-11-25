@@ -2,5 +2,6 @@
     "token":"YOUR_TOKEN",
     "masterSenpai":"YOUR_OWN_ID",
     "soundboardPrivilege":"ROLE_NEEDED_FOR_SOUNDBOARD",
-    "prefix":"!"
+    "prefix":"!",
+    "deleteWaitTimeInMs":60000
 }

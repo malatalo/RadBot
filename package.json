@@ -21,8 +21,10 @@
   },
   "homepage": "https://github.com/Miikka-Alatalo/RadBot#readme",
   "dependencies": {
+    "bluebird": "^3.5.1",
     "discord.js": "^11.2.1",
     "forever": "^0.15.3",
-    "node-opus": "^0.2.7"
+    "node-opus": "^0.2.7",
+    "request": "^2.83.0"
   }
 }

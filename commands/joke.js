@@ -10,7 +10,7 @@ exports.run = (client, message, args) => {
           message.channel.send('Kit-Kat :D::DD');
         })
         .catch(() => {
-          message.channel.send('Pitää sanoa "no?" puolessa minuutissa :((');
+          message.channel.send('Kit-Kat :D::DD');
         });
     });
 }
