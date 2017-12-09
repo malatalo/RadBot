@@ -3,5 +3,6 @@
     "masterSenpai":"YOUR_OWN_ID",
     "soundboardPrivilege":"ROLE_NEEDED_FOR_SOUNDBOARD",
     "prefix":"!",
-    "deleteWaitTimeInMs":60000
+    "deleteWaitTimeInMs":60000,
+    "passes":2
 }

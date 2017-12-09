@@ -1,1 +1,1 @@
-./node_modules/.bin/forever RadBot.js &
+./node_modules/.bin/forever RadBot.js &> log.txt &

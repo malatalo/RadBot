@@ -3,16 +3,19 @@ const client = new Discord.Client();
 const conf = require("./conf.json");
 const fs = require("fs");
 const request = require('request');
+const ytdl = require('ytdl-core');
 
 const soundboardPrivilege = conf.soundboardPrivilege;
 const prefix = conf.prefix;
 const masterSenpai = conf.masterSenpai;
 const deleteWaitTimeInMs = conf.deleteWaitTimeInMs;
-
+const passes = conf.passes;
 const commandSpam = new Set();
+
 let clientVoiceConnection = null;
 let streamdispatcher = null;
-let volume = 0.5;
+let volume = 0.35;
+let ytque = [];
 
 client.on('ready', () => {
   console.log("Logged in as " + client.user.tag + "!");
@@ -80,29 +83,64 @@ const commands = {
       streamdispatcher.end();
     }
   },
-  'volume': (message, args) => {
+  'vol': (message, args) => {
     if (message.member.roles.find("name", conf.soundboardPrivilege)) {
+      if(args.length == 0){
+        message.channel.send(volume).then(message => message.delete(deleteWaitTimeInMs)).catch(console.error);
+        return;
+      }
       try {
         volume = parseFloat(args[0]);
-        message.channel.send("volume on nyt " + volume).then(message => message.delete(deleteWaitTimeInMs)).catch(console.error);
+        if(streamdispatcher){
+          streamdispatcher.setVolume(volume);
+        }
+        message.channel.send("volume = " + volume).then(message => message.delete(deleteWaitTimeInMs)).catch(console.error);
       } catch (err) {
-        message.channel.send("anna desimaali").then(message => message.delete(deleteWaitTimeInMs)).catch(console.error);
+        console.log(err);
+        message.channel.send("anna desimaali (tai koodi rippas)").then(message => message.delete(deleteWaitTimeInMs)).catch(console.error);
       }
     }
   },
   'say': (message, args) => {
     if (message.author.id == masterSenpai) {
       let stringToSend = args.join(' ');
-      client.channels.get('213681951071141889').sendMessage(stringToSend)
+      client.channels.get('213681951071141889').send(stringToSend)
     }
   },
   'ping': (message, args) => {
     message.channel.send("pong!")
-    .then(message => message.delete(60000))
-    .catch(console.error);
+      .then(message => message.delete(60000))
+      .catch(console.error);
   },
   'joke': (message, args) => {
-    require('./commands/joke.js').run(client, message, args);
+    message.channel.send('Mitkä renkaat laitetaan suklaa-autoon talvella?')
+      .then(() => {
+        message.channel.awaitMessages(response => response.content === 'no?', {
+            max: 1,
+            time: 30000,
+            errors: ['time'],
+          })
+          .then((collected) => {
+            message.channel.send('Kit-Kat :D::DD');
+          })
+          .catch(() => {
+            message.channel.send('Kit-Kat :D::DD');
+          });
+      });
+  },
+  'yt': (message, args) => {
+    if (message.member.roles.find("name", conf.soundboardPrivilege) && clientVoiceConnection) {
+      if (!ytdl.validateURL(args[0])) {
+        message.channel.send("Virheellinen url").then(message => message.delete(deleteWaitTimeInMs)).catch(console.error);
+        return;
+      }
+      streamdispatcher = clientVoiceConnection.playStream(ytdl(args[0], {
+        audioonly: true
+      }), {
+        passes: passes,
+        volume: volume
+      });
+    }
   },
   'dadjoke': (message, args) => {
     request('https://icanhazdadjoke.com/', {
@@ -113,6 +151,10 @@ const commands = {
       }
       message.channel.send(body.joke).then(message => message.delete(deleteWaitTimeInMs)).catch(console.error);
     });
+  },
+  '?': (message, args) => {
+    message.channel.send("https://github.com/Miikka-Alatalo/RadBot")
+      .catch(console.error);
   },
 }
 
